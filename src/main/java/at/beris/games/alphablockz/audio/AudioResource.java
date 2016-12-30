@@ -12,16 +12,15 @@ import javazoom.jl.decoder.BitstreamException;
 import javazoom.jl.decoder.Decoder;
 import javazoom.jl.decoder.Header;
 
-import java.io.InputStream;
-
 public class AudioResource {
     private Bitstream bitstream;
+    private AudioResourceData data;
     private Decoder decoder;
 
-
-    public AudioResource(InputStream stream, Decoder decoder) {
-        this.bitstream = new Bitstream(stream);
-        this.decoder = decoder;
+    public AudioResource(AudioResourceData audioResourceEnum) {
+        this.bitstream = new Bitstream(this.getClass().getClassLoader().getResourceAsStream(audioResourceEnum.getFilename()));
+        this.data = audioResourceEnum;
+        this.decoder = new Decoder();
     }
 
     public Bitstream getBitstream() {
@@ -57,11 +56,11 @@ public class AudioResource {
         this.bitstream.reset();
     }
 
-    public Decoder getDecoder() {
-        return decoder;
+    public AudioResourceData getData() {
+        return data;
     }
 
-    public void setDecoder(Decoder decoder) {
-        this.decoder = decoder;
+    public Decoder getDecoder() {
+        return decoder;
     }
 }

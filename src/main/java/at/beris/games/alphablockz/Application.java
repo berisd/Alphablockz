@@ -7,29 +7,20 @@
 package at.beris.games.alphablockz;
 
 import at.beris.games.alphablockz.audio.AudioPlayer;
+import at.beris.games.alphablockz.audio.AudioResource;
+import at.beris.games.alphablockz.audio.AudioResourceData;
 import at.beris.games.alphablockz.word.Dictionary;
 import javazoom.jl.decoder.JavaLayerException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.WindowConstants;
-import java.awt.EventQueue;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
-import java.io.BufferedInputStream;
-import java.io.InputStream;
 import java.util.Properties;
 
 public class Application extends JFrame {
     private final static Logger LOGGER = Logger.getLogger(Application.class.getName());
-
-    public static final String ID_SOUND_LETTER_MOVING = "letter_moving";
-    public static final String ID_SOUND_LETTER_FALLING = "letter_falling";
-    public static final String ID_SOUND_WORD_MATCHING = "word_matching";
-    public static final String ID_SOUND_LEVEL_COMPLETED = "level_completed";
-    public static final String ID_SOUND_GAME_OVER = "game_over";
 
     public static final String ID_PROPERTY_VERSION = "version";
     public static final String ID_PROPERTY_BUILD_TIMESTAMP = "build.timestamp";
@@ -66,25 +57,20 @@ public class Application extends JFrame {
         titleScreen = new TitleScreen(new CustomTitleScreenListener());
         add(titleScreen);
 
-        InputStream musicStream = this.getClass().getClassLoader().getResourceAsStream("bensound-clearday.mp3");
-        InputStream soundStreamLetterMoving = this.getClass().getClassLoader().getResourceAsStream("Eye_Poke-Klocko-584660179.mp3");
-        InputStream soundStreamLetterFalling = this.getClass().getClassLoader().getResourceAsStream("Realistic_Punch-Mark_DiAngelo-1609462330.mp3");
-        InputStream soundStreamWordMatching = this.getClass().getClassLoader().getResourceAsStream("Gun_Shot-Marvin-1140816320.mp3");
-        InputStream soundStreamLevelCompleted = this.getClass().getClassLoader().getResourceAsStream("News_Intro-Maximilien_-1801238420.mp3");
-        InputStream soundStreamLGameOver = this.getClass().getClassLoader().getResourceAsStream("Evil_Laugh_2-Sound_Explorer-1081271267.mp3");
-
         try {
-            musicPlayer = new AudioPlayer(new BufferedInputStream(musicStream));
+            musicPlayer = new AudioPlayer();
+            musicPlayer.addAudioResource(new AudioResource(AudioResourceData.GAME_MUSIC));
+            musicPlayer.setResource(AudioResourceData.GAME_MUSIC);
             musicPlayer.setLooping(true);
 
             actionSoundPlayer = new AudioPlayer();
-            actionSoundPlayer.addStream(ID_SOUND_LETTER_MOVING, soundStreamLetterMoving);
-            actionSoundPlayer.addStream(ID_SOUND_LETTER_FALLING, soundStreamLetterFalling);
+            actionSoundPlayer.addAudioResource(new AudioResource(AudioResourceData.SOUND_LETTER_MOVING));
+            actionSoundPlayer.addAudioResource(new AudioResource(AudioResourceData.SOUND_LETTER_FALLING));
 
             eventSoundPlayer = new AudioPlayer();
-            eventSoundPlayer.addStream(ID_SOUND_WORD_MATCHING, soundStreamWordMatching);
-            eventSoundPlayer.addStream(ID_SOUND_LEVEL_COMPLETED, soundStreamLevelCompleted);
-            eventSoundPlayer.addStream(ID_SOUND_GAME_OVER, soundStreamLGameOver);
+            eventSoundPlayer.addAudioResource(new AudioResource(AudioResourceData.SOUND_WORD_MATCHING));
+            eventSoundPlayer.addAudioResource(new AudioResource(AudioResourceData.SOUND_LEVEL_COMPLETED));
+            eventSoundPlayer.addAudioResource(new AudioResource(AudioResourceData.SOUND_GAME_OVER));
         } catch (JavaLayerException e) {
             logException(e);
         }
@@ -158,7 +144,7 @@ public class Application extends JFrame {
         StringBuilder sb = new StringBuilder(throwable.getClass().getName());
 
         for (StackTraceElement element : throwable.getStackTrace()) {
-            sb.append(System.lineSeparator());
+            sb.append(System.getProperty("line.separator"));
             sb.append(element.toString());
         }
 
@@ -188,15 +174,15 @@ public class Application extends JFrame {
 
     private class CustomGameScreenListener implements GameScreenListener {
         public void letterMoved() {
-            playSound(actionSoundPlayer, ID_SOUND_LETTER_MOVING);
+            playSound(actionSoundPlayer, AudioResourceData.SOUND_LETTER_MOVING);
         }
 
         public void letterFalling() {
-            playSound(actionSoundPlayer, ID_SOUND_LETTER_FALLING);
+            playSound(actionSoundPlayer, AudioResourceData.SOUND_LETTER_FALLING);
         }
 
         public void wordMatching() {
-            playSound(eventSoundPlayer, ID_SOUND_WORD_MATCHING);
+            playSound(eventSoundPlayer, AudioResourceData.SOUND_WORD_MATCHING);
         }
 
         public void levelStarted() {
@@ -208,7 +194,7 @@ public class Application extends JFrame {
 
         public void levelCompleted() {
             musicPlayer.stop();
-            playSound(eventSoundPlayer, ID_SOUND_LEVEL_COMPLETED);
+            playSound(eventSoundPlayer, AudioResourceData.SOUND_LEVEL_COMPLETED);
         }
 
         public void gameStarted() {
@@ -218,7 +204,7 @@ public class Application extends JFrame {
 
         public void gameOver() {
             musicPlayer.stop();
-            playSound(eventSoundPlayer, ID_SOUND_GAME_OVER);
+            playSound(eventSoundPlayer, AudioResourceData.SOUND_GAME_OVER);
         }
 
         public void exitGame() {
@@ -235,12 +221,12 @@ public class Application extends JFrame {
         }
     }
 
-    private void playSound(AudioPlayer player, String soundId) {
+    private void playSound(AudioPlayer player, AudioResourceData audioResourceData) {
         if (player.isPlaying()) {
             player.stop();
         }
         player.reset();
-        player.setStream(soundId);
+        player.setResource(audioResourceData);
         player.play();
     }
 }
