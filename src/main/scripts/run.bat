@@ -1,0 +1,1 @@
+start javaw -jar ${project.build.finalName}.jar

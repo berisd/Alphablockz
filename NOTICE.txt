@@ -1,0 +1,18 @@
+Resources and libraries used by the application:
+
+JLayer MP3 library (C) JavaZOOM
+http://www.javazoom.net/javalayer/javalayer.html
+
+Apache Log4J (C) Apache Software Foundation
+http://logging.apache.org/log4j/1.2/
+
+Royalty Free Music from Bensound:
+Clear Day
+http://www.bensound.com
+
+Free sounds from soundbible.com:
+Evil Laugh 2 Sound, Recorded by Sound Explorer
+Eye Poke Sound, Recorded by Klocko
+Gun Shot Sound, Recorded by Marvin
+News Intro Sound, Recorded by Maximilien
+Realistic Punch Sound, Recorded by Mark DiAngelo
