@@ -1,5 +1,5 @@
 /*
- * 15/08/12  Make Stream resetable (to beginning)
+ * 15/08/12  Make Stream resetable
  * 11/19/04  1.0 moved to LGPL.
  * 
  * 11/17/04	 Uncomplete frames discarded. E.B, javalayer@javazoom.net 

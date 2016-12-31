@@ -1,4 +1,5 @@
 /*
+ * 15/08/12  	Make Dataline resetable
  * 11/26/04		Buffer size modified to support JRE 1.5 optimizations.
  *              (CPU usage < 1% under P4/2Ghz, RAM < 12MB).
  *              jlayer@javazoom.net
