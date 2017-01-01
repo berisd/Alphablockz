@@ -7,16 +7,12 @@
 package at.beris.games.alphablockz;
 
 import at.beris.games.alphablockz.gui.*;
-import at.beris.games.alphablockz.word.Letter;
-import at.beris.games.alphablockz.word.LetterColor;
-import at.beris.games.alphablockz.word.Word;
+import at.beris.games.alphablockz.gui.Button;
+import at.beris.games.alphablockz.gui.Label;
 import org.apache.log4j.Logger;
 
-import javax.swing.JPanel;
-import javax.swing.Timer;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -34,10 +30,11 @@ public class TitleScreen extends JPanel implements ActionListener {
     public static final String ID_HELP_BOX = "helpBox";
     public static final String ID_LABEL_HIGHSCORE = "labelHighscore";
     public static final String ID_LABEL_AUTHOR = "labelAuthor";
+    public static final String ID_LOGO_ALPHA = "logoAlpha";
+    public static final String ID_LOGO_BLOCKZ = "logoBlockz";
 
     private TitleScreenListener listener;
     private Map<String, Drawable> widgets;
-    private Word[] titleWords;
 
     private Timer timer;
 
@@ -63,19 +60,20 @@ public class TitleScreen extends JPanel implements ActionListener {
         });
 
         createWidgets();
-        createWords();
-
         timer.start();
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        drawTitleScreen(g);
+        drawScreen(g);
     }
 
     private void createWidgets() {
         widgets = new LinkedHashMap<String, Drawable>();
+        widgets.put(ID_LOGO_ALPHA, new Logo(132, 40, "alpha"));
+        widgets.put(ID_LOGO_BLOCKZ, new Logo(82, 115, "blockz"));
+
         int x = 85;
         int y = 285;
         Button buttonStart = new Button(x, y, 100, 50, "Start");
@@ -100,54 +98,19 @@ public class TitleScreen extends JPanel implements ActionListener {
         widgets.put(ID_HELP_BOX, new HelpBox(65, 35, 500, 380, false));
     }
 
-    private void createWords() {
-        LetterColor[] foregroundColors = {LetterColor.RED, LetterColor.GREEN, LetterColor.BLUE, LetterColor.CYAN};
-        titleWords = new Word[2];
-        int y = 0;
-
-        for (Word word : new Word[]{new Word("alpha"), new Word("blockz")}) {
-            for (int x = 0; x < word.length(); x++) {
-                Letter letter = word.get(x);
-                letter.setColor(foregroundColors[x % foregroundColors.length]);
-                letter.setBackgroundColor(LetterColor.YELLOW);
-            }
-            titleWords[y] = word;
-            y += 1;
-        }
-    }
-
-    protected void drawTitleScreen(Graphics graphics) {
-        final Graphics2D graphics2D = (Graphics2D) graphics.create();
-        int x = 132;
-        int y = 40;
-        for (Word word : titleWords) {
-            word.draw(graphics2D, x, y, 15, 15);
-            x -= 50;
-            y += 5 * 15;
-        }
-
-        for (Object o : widgets.entrySet()) {
+    protected void drawScreen(Graphics graphics) {
+        for (Map.Entry<String, Drawable> pair : widgets.entrySet()) {
             final Graphics2D g2d = (Graphics2D) graphics.create();
-            Map.Entry pair = (Map.Entry) o;
-            Drawable widget = (Drawable) pair.getValue();
+            Drawable widget = pair.getValue();
             widget.draw(g2d);
             g2d.dispose();
         }
-
-        graphics2D.dispose();
     }
 
     public void actionPerformed(ActionEvent e) {
-        boolean reverseColors = true;
-        for (Word word : titleWords) {
-            for (Letter letter : word) {
-                letter.setColor(reverseColors ? letter.getColor().getPreviousForeColor() : letter.getColor().getNextForeColor());
-            }
-            reverseColors = false;
-        }
-
+        ((Logo) widgets.get(ID_LOGO_ALPHA)).cycleLetterColors(true);
+        ((Logo) widgets.get(ID_LOGO_BLOCKZ)).cycleLetterColors(false);
         ((Label) widgets.get(ID_LABEL_HIGHSCORE)).setText("Highscore: " + listener.getHighScore());
-
         repaint();
     }
 
