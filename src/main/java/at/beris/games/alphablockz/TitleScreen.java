@@ -19,23 +19,10 @@ import java.util.Map;
 
 public class TitleScreen extends JPanel implements ActionListener {
     private final static Logger LOGGER = Logger.getLogger(TitleScreen.class.getName());
-
     private final static int TIMER_DELAY = 500;
 
-    public static final String ID_BUTTON_START = "buttonStart";
-    public static final String ID_BUTTON_HELP = "buttonHelp";
-    public static final String ID_BUTTON_ABOUT = "buttonAbout";
-    public static final String ID_BUTTON_QUIT = "buttonQuit";
-    public static final String ID_ABOUT_BOX = "aboutBox";
-    public static final String ID_HELP_BOX = "helpBox";
-    public static final String ID_LABEL_HIGHSCORE = "labelHighscore";
-    public static final String ID_LABEL_AUTHOR = "labelAuthor";
-    public static final String ID_LOGO_ALPHA = "logoAlpha";
-    public static final String ID_LOGO_BLOCKZ = "logoBlockz";
-
     private TitleScreenListener listener;
-    private Map<String, Drawable> widgets;
-
+    private Map<WidgetId, Drawable> widgets;
     private Timer timer;
 
     public TitleScreen(TitleScreenListener listener) {
@@ -70,59 +57,58 @@ public class TitleScreen extends JPanel implements ActionListener {
     }
 
     private void createWidgets() {
-        widgets = new LinkedHashMap<String, Drawable>();
-        widgets.put(ID_LOGO_ALPHA, new Logo(132, 40, "alpha"));
-        widgets.put(ID_LOGO_BLOCKZ, new Logo(82, 115, "blockz"));
+        widgets = new LinkedHashMap<WidgetId, Drawable>();
+        widgets.put(WidgetId.LOGO_ALPHA, new Logo(132, 40, "alpha"));
+        widgets.put(WidgetId.LOGO_BLOCKZ, new Logo(82, 115, "blockz"));
 
         int x = 85;
         int y = 285;
         Button buttonStart = new Button(x, y, 100, 50, "Start");
-        widgets.put(ID_BUTTON_START, buttonStart);
+        widgets.put(WidgetId.BUTTON_START, buttonStart);
         Button buttonHelp = new Button(x + 115, y, 100, 50, "Help");
-        widgets.put(ID_BUTTON_HELP, buttonHelp);
+        widgets.put(WidgetId.BUTTON_HELP, buttonHelp);
         Button buttonAbout = new Button(x + 2 * 115, y, 100, 50, "About");
-        widgets.put(ID_BUTTON_ABOUT, buttonAbout);
+        widgets.put(WidgetId.BUTTON_ABOUT, buttonAbout);
         Button buttonQuit = new Button(x + 3 * 115, y, 100, 50, "Quit");
-        widgets.put(ID_BUTTON_QUIT, buttonQuit);
+        widgets.put(WidgetId.BUTTON_QUIT, buttonQuit);
 
         Label labelHighScore = new Label(230, 240, "Highscore: " + listener.getHighScore());
         labelHighScore.setFont(FontEnum.LARGE);
         labelHighScore.setColor(Color.BLUE);
-        widgets.put(ID_LABEL_HIGHSCORE, labelHighScore);
+        widgets.put(WidgetId.LABEL_HIGHSCORE, labelHighScore);
 
         Label labelAuthor = new Label(180, 395, "(C) 2015 Bernd Riedl");
         labelAuthor.setFont(FontEnum.LARGE);
-        widgets.put(ID_LABEL_AUTHOR, labelAuthor);
+        widgets.put(WidgetId.LABEL_AUTHOR, labelAuthor);
 
-        widgets.put(ID_ABOUT_BOX, new AboutBox(185, 100, 280, 225, false));
-        widgets.put(ID_HELP_BOX, new HelpBox(65, 35, 500, 380, false));
+        widgets.put(WidgetId.ABOUT_BOX, new AboutBox(185, 100, 280, 225, false));
+        widgets.put(WidgetId.HELP_BOX, new HelpBox(65, 35, 500, 380, false));
     }
 
     protected void drawScreen(Graphics graphics) {
-        for (Map.Entry<String, Drawable> pair : widgets.entrySet()) {
+        for (Drawable widget : widgets.values()) {
             final Graphics2D g2d = (Graphics2D) graphics.create();
-            Drawable widget = pair.getValue();
             widget.draw(g2d);
             g2d.dispose();
         }
     }
 
     public void actionPerformed(ActionEvent e) {
-        ((Logo) widgets.get(ID_LOGO_ALPHA)).cycleLetterColors(true);
-        ((Logo) widgets.get(ID_LOGO_BLOCKZ)).cycleLetterColors(false);
-        ((Label) widgets.get(ID_LABEL_HIGHSCORE)).setText("Highscore: " + listener.getHighScore());
+        ((Logo) widgets.get(WidgetId.LOGO_ALPHA)).cycleLetterColors(true);
+        ((Logo) widgets.get(WidgetId.LOGO_BLOCKZ)).cycleLetterColors(false);
+        ((Label) widgets.get(WidgetId.LABEL_HIGHSCORE)).setText("Highscore: " + listener.getHighScore());
         repaint();
     }
 
     class CustomMouseListener extends MouseAdapter {
         @Override
         public void mouseClicked(MouseEvent e) {
-            AboutBox aboutBox = (AboutBox) widgets.get(ID_ABOUT_BOX);
-            HelpBox helpBox = (HelpBox) widgets.get(ID_HELP_BOX);
-            Button buttonStart = (Button) widgets.get(ID_BUTTON_START);
-            Button buttonHelp = (Button) widgets.get(ID_BUTTON_HELP);
-            Button buttonAbout = (Button) widgets.get(ID_BUTTON_ABOUT);
-            Button buttonQuit = (Button) widgets.get(ID_BUTTON_QUIT);
+            AboutBox aboutBox = (AboutBox) widgets.get(WidgetId.ABOUT_BOX);
+            HelpBox helpBox = (HelpBox) widgets.get(WidgetId.HELP_BOX);
+            Button buttonStart = (Button) widgets.get(WidgetId.BUTTON_START);
+            Button buttonHelp = (Button) widgets.get(WidgetId.BUTTON_HELP);
+            Button buttonAbout = (Button) widgets.get(WidgetId.BUTTON_ABOUT);
+            Button buttonQuit = (Button) widgets.get(WidgetId.BUTTON_QUIT);
 
             if (aboutBox.isVisible() && aboutBox.contains(e.getX(), e.getY())) {
                 aboutBox.setVisible(false);
@@ -153,8 +139,8 @@ public class TitleScreen extends JPanel implements ActionListener {
         public void keyPressed(KeyEvent e) {
             super.keyPressed(e);
 
-            AboutBox aboutBox = (AboutBox) widgets.get(ID_ABOUT_BOX);
-            HelpBox helpBox = (HelpBox) widgets.get(ID_HELP_BOX);
+            AboutBox aboutBox = (AboutBox) widgets.get(WidgetId.ABOUT_BOX);
+            HelpBox helpBox = (HelpBox) widgets.get(WidgetId.HELP_BOX);
 
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_S:

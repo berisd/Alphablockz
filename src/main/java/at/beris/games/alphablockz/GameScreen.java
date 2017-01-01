@@ -7,14 +7,14 @@
 package at.beris.games.alphablockz;
 
 import at.beris.games.alphablockz.gui.*;
+import at.beris.games.alphablockz.gui.Button;
+import at.beris.games.alphablockz.gui.Label;
+import at.beris.games.alphablockz.gui.Point;
 import org.apache.log4j.Logger;
 
-import javax.swing.JPanel;
-import javax.swing.Timer;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -23,26 +23,6 @@ import java.util.concurrent.TimeUnit;
 
 public class GameScreen extends JPanel implements ActionListener {
     private final static Logger LOGGER = Logger.getLogger(GameScreen.class.getName());
-
-    public static final String ID_LABEL_TIME_LEFT_CAPTION = "labelTimeLeftCaption";
-    public static final String ID_LABEL_TIME_LEFT = "labelTimeLeft";
-    public static final String ID_LABEL_LEVEL_CAPTION = "labelLevelCaption";
-    public static final String ID_LABEL_LEVEL = "labelLevel";
-    public static final String ID_LABEL_SCORE_CAPTION = "labelScoreCaption";
-    public static final String ID_LABEL_SCORE = "labelScore";
-    public static final String ID_WORD_LIST = "wordList";
-    public static final String ID_LABEL_PROGRESS = "labelProgress";
-    public static final String ID_PROGRESS_BAR = "progressBar";
-
-    public static final String ID_BUTTON_EXIT = "buttonExit";
-    public static final String ID_BUTTON_PAUSE = "buttonPause";
-    public static final String ID_LABEL_GAME_OVER = "labelGameOver";
-    public static final String ID_LABEL_GAME_PAUSED = "labelGamePaused";
-    public static final String ID_LABEL_LEVEL_COMPLETED = "labelLevelCompleted";
-    public static final String ID_CURRENT_LETTER = "currentLetter";
-
-    private Timer timer;
-
     private final static int TIMER_DELAY = 50;
     private final static int MAX_SPEED = 10;
     private final static int INPUT_ENABLER_DELAY_IN_MSEC = 1000;
@@ -50,19 +30,17 @@ public class GameScreen extends JPanel implements ActionListener {
 
     private long startTimeWaitMs = System.currentTimeMillis();
 
+    private Timer timer;
     private GameScreenListener listener;
     private GameLogic gameLogic;
     private Board board;
+    private ScheduledExecutorService scheduledExecutorService;
+    private InputEnabler inputEnabler;
+    private Map<WidgetId, Drawable> widgets;
 
     private boolean isGamePaused;
     private boolean keyListenerEnabled;
     private boolean mouseListenerEnabled;
-
-    private ScheduledExecutorService scheduledExecutorService;
-    private InputEnabler inputEnabler;
-
-    private Map<String, Drawable> widgets;
-
 
     public GameScreen(GameScreenListener listener, GameLogic gameLogic) {
         this.listener = listener;
@@ -100,81 +78,78 @@ public class GameScreen extends JPanel implements ActionListener {
 
 
     private void createWidgets() {
-        widgets = new LinkedHashMap<String, Drawable>();
-        widgets.put("board", board);
-
-        widgets.put(ID_CURRENT_LETTER, null);
+        widgets = new LinkedHashMap<WidgetId, Drawable>();
+        widgets.put(WidgetId.BOARD, board);
+        widgets.put(WidgetId.CURRENT_LETTER, null);
 
         gameLogic.getWordList().setLocation(new Point(450, 210));
-        widgets.put(ID_WORD_LIST, gameLogic.getWordList());
+        widgets.put(WidgetId.WORD_LIST, gameLogic.getWordList());
 
         Label labelTimeLeftCaption = new Label(450, 20, "Time:");
         labelTimeLeftCaption.setFont(FontEnum.STD);
-        widgets.put(ID_LABEL_TIME_LEFT_CAPTION, labelTimeLeftCaption);
+        widgets.put(WidgetId.LABEL_TIME_LEFT_CAPTION, labelTimeLeftCaption);
 
         Label labelTimeLeft = new Label(450, 20 + 20, "5:00");
         labelTimeLeft.setFont(FontEnum.STD);
-        widgets.put(ID_LABEL_TIME_LEFT, labelTimeLeft);
+        widgets.put(WidgetId.LABEL_TIME_LEFT, labelTimeLeft);
 
         Label labelLevelCaption = new Label(525, 20, "Level:");
         labelLevelCaption.setFont(FontEnum.STD);
-        widgets.put(ID_LABEL_LEVEL_CAPTION, labelLevelCaption);
+        widgets.put(WidgetId.LABEL_LEVEL_CAPTION, labelLevelCaption);
 
         Label labelLevel = new Label(525, 20 + 20, Integer.toString(gameLogic.getLevel()));
         labelLevel.setFont(FontEnum.STD);
-        widgets.put(ID_LABEL_LEVEL, labelLevel);
+        widgets.put(WidgetId.LABEL_LEVEL, labelLevel);
 
         Label labelScoreCaption = new Label(450, 80, "Score: ");
         labelScoreCaption.setFont(FontEnum.STD);
-        widgets.put(ID_LABEL_SCORE_CAPTION, labelScoreCaption);
+        widgets.put(WidgetId.LABEL_SCORE_CAPTION, labelScoreCaption);
 
         Label labelScore = new Label(450, 80 + 20, Integer.toString(gameLogic.getScore()));
         labelScore.setFont(FontEnum.STD);
-        widgets.put(ID_LABEL_SCORE, labelScore);
+        widgets.put(WidgetId.LABEL_SCORE, labelScore);
 
         Button buttonPause = new Button(450, 370, 85, 40, "Pause");
-        widgets.put(ID_BUTTON_PAUSE, buttonPause);
+        widgets.put(WidgetId.BUTTON_PAUSE, buttonPause);
 
         Button buttonExit = new Button(540, 370, 85, 40, "Exit");
-        widgets.put(ID_BUTTON_EXIT, buttonExit);
+        widgets.put(WidgetId.BUTTON_EXIT, buttonExit);
 
         Label labelProgress = new Label(450, 130, "Progress:");
         labelProgress.setFont(FontEnum.STD);
-        widgets.put(ID_LABEL_PROGRESS, labelProgress);
+        widgets.put(WidgetId.LABEL_PROGRESS, labelProgress);
 
         ProgressBar progressBar = new ProgressBar(450, 130 + 10);
-        widgets.put(ID_PROGRESS_BAR, progressBar);
+        widgets.put(WidgetId.PROGRESS_BAR, progressBar);
 
         Label labelGameOver = new Label(100, 200, "Game Over");
         labelGameOver.setFont(FontEnum.XLARGE);
         labelGameOver.setVisible(false);
-        widgets.put(ID_LABEL_GAME_OVER, labelGameOver);
+        widgets.put(WidgetId.LABEL_GAME_OVER, labelGameOver);
 
         Label labelLevelCompleted = new Label(100, 200, "Level completed");
         labelLevelCompleted.setFont(FontEnum.XLARGE);
         labelLevelCompleted.setVisible(false);
-        widgets.put(ID_LABEL_LEVEL_COMPLETED, labelLevelCompleted);
+        widgets.put(WidgetId.LABEL_LEVEL_COMPLETED, labelLevelCompleted);
 
         Label labelGamePaused = new Label(100, 200, "Game Paused");
         labelGamePaused.setFont(FontEnum.XLARGE);
         labelGamePaused.setVisible(false);
-        widgets.put(ID_LABEL_GAME_PAUSED, labelGamePaused);
+        widgets.put(WidgetId.LABEL_GAME_PAUSED, labelGamePaused);
     }
 
     private void resetPlayingScreenWidgets() {
-        ((Label) widgets.get(ID_LABEL_SCORE)).setText(Integer.toString(gameLogic.getScore()));
-        ((Label) widgets.get(ID_LABEL_LEVEL)).setText(Integer.toString(gameLogic.getLevel()));
-        ((ProgressBar) widgets.get(ID_PROGRESS_BAR)).setPercentage(0);
+        ((Label) widgets.get(WidgetId.LABEL_SCORE)).setText(Integer.toString(gameLogic.getScore()));
+        ((Label) widgets.get(WidgetId.LABEL_LEVEL)).setText(Integer.toString(gameLogic.getLevel()));
+        ((ProgressBar) widgets.get(WidgetId.PROGRESS_BAR)).setPercentage(0);
 
-        ((Label) widgets.get(ID_LABEL_GAME_OVER)).setVisible(false);
-        ((Label) widgets.get(ID_LABEL_GAME_PAUSED)).setVisible(false);
-        ((Label) widgets.get(ID_LABEL_LEVEL_COMPLETED)).setVisible(false);
+        ((Label) widgets.get(WidgetId.LABEL_GAME_OVER)).setVisible(false);
+        ((Label) widgets.get(WidgetId.LABEL_GAME_PAUSED)).setVisible(false);
+        ((Label) widgets.get(WidgetId.LABEL_LEVEL_COMPLETED)).setVisible(false);
     }
 
-    protected void drawPlayingScreen(Graphics graphics) {
-        for (Object o : widgets.entrySet()) {
-            Map.Entry pair = (Map.Entry) o;
-            Drawable widget = (Drawable) pair.getValue();
+    protected void drawScreen(Graphics graphics) {
+        for (Drawable widget : widgets.values()) {
             if (widget != null && widget.isVisible()) {
                 final Graphics2D g2d = (Graphics2D) graphics.create();
                 widget.draw(g2d);
@@ -186,7 +161,7 @@ public class GameScreen extends JPanel implements ActionListener {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        drawPlayingScreen(g);
+        drawScreen(g);
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -238,7 +213,7 @@ public class GameScreen extends JPanel implements ActionListener {
                         board.setCurrentLetter(gameLogic.createRandomLetter());
                     }
 
-                    ((Label) widgets.get(ID_LABEL_SCORE)).setText(Integer.toString(gameLogic.getScore()));
+                    ((Label) widgets.get(WidgetId.LABEL_SCORE)).setText(Integer.toString(gameLogic.getScore()));
                 }
             } else {
                 board.setCurrentLetterY(board.getCurrentLetterY() + 1);
@@ -258,8 +233,8 @@ public class GameScreen extends JPanel implements ActionListener {
         disableInputForAShortTime();
         gameLogic.wordFound();
         gameLogic.addNewWordToWordList();
-        ((Label) widgets.get(ID_LABEL_SCORE)).setText(Integer.toString(gameLogic.getScore()));
-        ((ProgressBar) widgets.get(ID_PROGRESS_BAR)).setPercentage(gameLogic.getPercentageLevelCompleted());
+        ((Label) widgets.get(WidgetId.LABEL_SCORE)).setText(Integer.toString(gameLogic.getScore()));
+        ((ProgressBar) widgets.get(WidgetId.PROGRESS_BAR)).setPercentage(gameLogic.getPercentageLevelCompleted());
     }
 
     private void gameOver() {
@@ -268,7 +243,7 @@ public class GameScreen extends JPanel implements ActionListener {
         timer.stop();
         gameLogic.gameOver();
 
-        ((Label) widgets.get(ID_LABEL_GAME_OVER)).setVisible(true);
+        ((Label) widgets.get(WidgetId.LABEL_GAME_OVER)).setVisible(true);
     }
 
     private void levelCompleted() {
@@ -276,7 +251,7 @@ public class GameScreen extends JPanel implements ActionListener {
         listener.levelCompleted();
         gameLogic.levelCompleted();
 
-        ((Label) widgets.get(ID_LABEL_LEVEL_COMPLETED)).setVisible(true);
+        ((Label) widgets.get(WidgetId.LABEL_LEVEL_COMPLETED)).setVisible(true);
     }
 
     private void updatePlayingTimeLabel() {
@@ -289,7 +264,7 @@ public class GameScreen extends JPanel implements ActionListener {
             sb.append('0');
         sb.append(Integer.toString(timeInSec % 60));
 
-        ((Label) widgets.get(ID_LABEL_TIME_LEFT)).setText(sb.toString());
+        ((Label) widgets.get(WidgetId.LABEL_TIME_LEFT)).setText(sb.toString());
     }
 
     private void exitGame() {
@@ -312,9 +287,9 @@ public class GameScreen extends JPanel implements ActionListener {
                 exitGame();
             } else if (gameLogic.isLevelComplete()) {
                 startLevel();
-            } else if (((Button) widgets.get(ID_BUTTON_EXIT)).contains(e.getX(), e.getY())) {
+            } else if (((Button) widgets.get(WidgetId.BUTTON_EXIT)).contains(e.getX(), e.getY())) {
                 exitGame();
-            } else if (((Button) widgets.get(ID_BUTTON_PAUSE)).contains(e.getX(), e.getY())) {
+            } else if (((Button) widgets.get(WidgetId.BUTTON_PAUSE)).contains(e.getX(), e.getY())) {
                 pauseGame();
             }
         }
@@ -328,10 +303,10 @@ public class GameScreen extends JPanel implements ActionListener {
             timer.stop();
             Label labelGamePaused = new Label(100, 200, "Game Paused");
             labelGamePaused.setFont(FontEnum.XLARGE);
-            ((Label) widgets.get(ID_LABEL_GAME_PAUSED)).setVisible(true);
+            ((Label) widgets.get(WidgetId.LABEL_GAME_PAUSED)).setVisible(true);
         } else {
             listener.gameStarted();
-            ((Label) widgets.get(ID_LABEL_GAME_PAUSED)).setVisible(false);
+            ((Label) widgets.get(WidgetId.LABEL_GAME_PAUSED)).setVisible(false);
             timer.start();
         }
 
