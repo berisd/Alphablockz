@@ -54,9 +54,9 @@ public class HelpBox extends Widget {
         offsetY += 20;
         graphicsContext.drawString("Letters of those words are falling down in random colors in a grid.", offsetX, offsetY);
         offsetY += 20;
-        graphicsContext.drawString("You must arrange the letters to form a word from the list", offsetX, offsetY);
+        graphicsContext.drawString("Arrange the letters to form a word from the list in the same color", offsetX, offsetY);
         offsetY += 20;
-        graphicsContext.drawString("in the same color horizontally or vertically and straight or reversed.", offsetX, offsetY);
+        graphicsContext.drawString("horizontally or vertically and straight or reversed.", offsetX, offsetY);
         offsetY += 20;
         graphicsContext.drawString("If you have done all the words in a given time", offsetX, offsetY);
         offsetY += 20;
