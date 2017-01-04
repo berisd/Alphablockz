@@ -77,7 +77,7 @@ public class TitleScreen extends JPanel implements ActionListener {
         labelHighScore.setColor(Color.BLUE);
         widgets.put(WidgetId.LABEL_HIGHSCORE, labelHighScore);
 
-        Label labelAuthor = new Label(180, 395, "(C) 2015 Bernd Riedl");
+        Label labelAuthor = new Label(135, 395, "(C) 2015-2017 Bernd Riedl");
         labelAuthor.setFont(FontEnum.LARGE);
         widgets.put(WidgetId.LABEL_AUTHOR, labelAuthor);
 
