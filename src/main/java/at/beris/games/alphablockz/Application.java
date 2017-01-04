@@ -40,12 +40,18 @@ public class Application extends JFrame {
     public Application() {
         loadProperties();
         initLogging();
+        initGame();
+        initVideo();
+        initAudio();
+    }
 
+    private void initGame() {
         gameLogic = new GameLogic();
-
         Dictionary dictionary = Dictionary.getInstance();
         dictionary.load();
+    }
 
+    private void initVideo() {
         setSize(640, 480);
         setLocationRelativeTo(null);
         setTitle("AlphaBlockz");
@@ -56,7 +62,9 @@ public class Application extends JFrame {
 
         titleScreen = new TitleScreen(new CustomTitleScreenListener());
         add(titleScreen);
+    }
 
+    private void initAudio() {
         try {
             musicPlayer = new AudioPlayer();
             musicPlayer.addAudioResource(new AudioResource(AudioResourceData.GAME_MUSIC));

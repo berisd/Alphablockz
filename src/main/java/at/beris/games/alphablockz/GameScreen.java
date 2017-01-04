@@ -53,7 +53,6 @@ public class GameScreen extends JPanel implements ActionListener {
         setFocusable(true);
         addKeyListener(new CustomKeyListener());
         addMouseListener(new CustomMouseListener());
-
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentShown(ComponentEvent e) {
@@ -75,7 +74,6 @@ public class GameScreen extends JPanel implements ActionListener {
             mouseListenerEnabled = true;
         }
     }
-
 
     private void createWidgets() {
         widgets = new LinkedHashMap<WidgetId, Drawable>();
