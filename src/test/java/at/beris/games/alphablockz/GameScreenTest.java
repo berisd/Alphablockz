@@ -1,19 +1,14 @@
 /*
- * Copyright (C) 2015 Bernd Riedl <bernd.riedl@gmail.com> - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
+ * This file is part of Alphablockz.
+ *
+ * Copyright 2015-2017 by Bernd Riedl <bernd.riedl@gmail.com>
+ *
+ * Licensed under GNU General Public License 3.0 or later.
+ * Some rights reserved. See COPYING, AUTHORS.
  */
 package at.beris.games.alphablockz;
 
-import at.beris.games.alphablockz.word.Word;
 import org.junit.Before;
-import org.junit.Test;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
 
 public class GameScreenTest {
 
@@ -24,10 +19,5 @@ public class GameScreenTest {
         gameScreen = new GameScreen(new GameScreenAdapter() {
         }, new GameLogic());
     }
-
-
-
-
-
 
 }
