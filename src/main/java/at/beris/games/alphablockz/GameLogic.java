@@ -9,10 +9,9 @@ package at.beris.games.alphablockz;
 import at.beris.games.alphablockz.gui.Board;
 import at.beris.games.alphablockz.gui.WordList;
 import at.beris.games.alphablockz.word.*;
+import at.beris.games.alphablockz.word.Dictionary;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class GameLogic {
     public final static int LEVEL_MAX_PLAYING_TIME_IN_SEC = 300;
@@ -36,6 +35,7 @@ public class GameLogic {
     private WordMatch lastWordMatch;
 
     private final List<Integer> wordLengthsRequiredForLevel;
+    private TreeMap<Integer, Character> letterFrequencyRangeMap;
 
     public GameLogic() {
         dictionary = Dictionary.getInstance();
@@ -43,6 +43,7 @@ public class GameLogic {
         wordList = new WordList();
         scorePerWordLength = new int[]{10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000};
         wordLengthsRequiredForLevel = new ArrayList<Integer>();
+        letterFrequencyRangeMap = new TreeMap<Integer, Character>();
     }
 
     public Board getBoard() {
@@ -132,6 +133,33 @@ public class GameLogic {
         startTimeMs = System.currentTimeMillis();
         calculateWordLengthsForLevel();
         fillWordList();
+        calculateLetterFrequencies();
+    }
+
+    private void calculateLetterFrequencies() {
+        Map<Character, Integer> frequencyMap = getLetterFrequencyMap();
+        letterFrequencyRangeMap.clear();
+        Integer frequencyRangeEnd = 0;
+        for (Map.Entry<Character, Integer> entry : frequencyMap.entrySet()) {
+            Integer frequency = entry.getValue();
+            frequencyRangeEnd+=frequency;
+            letterFrequencyRangeMap.put(frequencyRangeEnd, entry.getKey());
+        }
+    }
+
+    private Map<Character, Integer> getLetterFrequencyMap() {
+        Map<Character, Integer> frequencyMap = new HashMap<Character, Integer>();
+        for (String word : wordList.asStringList()) {
+            for (int i = 0; i < word.length(); i++) {
+                char c = word.charAt(i);
+
+                if (frequencyMap.get(c) == null) {
+                    frequencyMap.put(c, 0);
+                }
+                frequencyMap.put(c, frequencyMap.get(c)+1);
+            }
+        }
+        return frequencyMap;
     }
 
     private void fillWordList() {
@@ -226,6 +254,7 @@ public class GameLogic {
         while (wordList.contains(randomWord));
 
         wordList.push(randomWord, LetterColor.getRandomForeColor().getColor());
+        calculateLetterFrequencies();
     }
 
     public boolean wordListContainsWordFound() {
@@ -251,12 +280,14 @@ public class GameLogic {
 
     public Letter createRandomLetter() {
         Random rand = new Random();
-        String randomWord = wordList.getRandomWord();
-        char randomChar = randomWord.charAt(rand.nextInt(randomWord.length()));
+        int frequencyRangeStep = 1 + rand.nextInt(letterFrequencyRangeMap.lastKey());
+        Map.Entry<Integer, Character> frequencyEntry = letterFrequencyRangeMap.floorEntry(frequencyRangeStep);
+        if (frequencyEntry == null) {
+            frequencyEntry = letterFrequencyRangeMap.higherEntry(frequencyRangeStep);
+        }
 
-        Letter letter = new Letter(randomChar);
+        Letter letter = new Letter(frequencyEntry.getValue());
         letter.setColor(LetterColor.getRandomForeColor());
-
         return letter;
     }
 }
