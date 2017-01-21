@@ -1,0 +1,33 @@
+<!--
+  ~ This file is part of Alphablockz.
+  ~
+  ~ Copyright 2015-2017 by Bernd Riedl <bernd.riedl@gmail.com>
+  ~
+  ~ Licensed under GNU General Public License 3.0 or later.
+  ~ Some rights reserved. See COPYING, AUTHORS.
+  -->
+
+<assembly>
+    <id>src</id>
+    <formats>
+        <format>zip</format>
+        <format>tar.gz</format>
+    </formats>
+
+    <fileSets>
+        <fileSet>
+            <directory>${basedir}</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <include>pom.xml</include>
+                <include>README</include>
+                <include>AUTHORS</include>
+                <include>COPYING</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/src</directory>
+            <useDefaultExcludes>true</useDefaultExcludes>
+        </fileSet>
+    </fileSets>
+</assembly>

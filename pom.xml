@@ -79,11 +79,8 @@
                 <configuration>
                     <descriptors>
                         <descriptor>src/main/assembly/bin.xml</descriptor>
+                        <descriptor>src/main/assembly/src.xml</descriptor>
                     </descriptors>
-                    <descriptorRefs>
-                        <!--<descriptorRef>bin</descriptorRef>-->
-                        <descriptorRef>src</descriptorRef>
-                    </descriptorRefs>
                 </configuration>
                 <executions>
                     <execution>
