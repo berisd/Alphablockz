@@ -6,7 +6,7 @@
 
     <groupId>at.beris.games</groupId>
     <artifactId>alphablockz</artifactId>
-    <version>1.1</version>
+    <version>1.2-snapshot</version>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
